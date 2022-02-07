@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
 import Footer from './components/Footer'
 import noteService from './services/notes'
 import loginService from './services/login'
+import NoteForm from './components/NoteForm'
 
 const App = () => {
+  // const [loginVisible, setLoginVisible] = useState(false)
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(false)
@@ -63,8 +67,10 @@ const App = () => {
   }
 
   const handleNoteChange = (event) => {
+    console.log(event.target.value)
     setNewNote(event.target.value)
   }
+
   // show list of important and all
   const notesToShow = showAll ? notes : notes.filter((note) => note.important)
 
@@ -122,47 +128,62 @@ const App = () => {
     }
   }
 
-  // === login form ===
+  // // === login form ===
 
-  const loginForm = () => (
-    <div className='login_form_container'>
-      <form className='login_form' onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type='text'
-            value={username}
-            name='Username'
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type='password'
-            value={password}
-            name='Password'
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type='submit'>login</button>
-      </form>
-    </div>
-  )
+  // const loginForm = () => (
+  //   <div className='login_form_container'>
+  //     <form className='login_form' onSubmit={handleLogin}>
+  //       <div>
+  //         username
+  //         <input
+  //           type='text'
+  //           value={username}
+  //           name='Username'
+  //           onChange={({ target }) => setUsername(target.value)}
+  //         />
+  //       </div>
+  //       <div>
+  //         password
+  //         <input
+  //           type='password'
+  //           value={password}
+  //           name='Password'
+  //           autoComplete='off'
+  //           onChange={({ target }) => setPassword(target.value)}
+  //         />
+  //       </div>
+  //       <button type='submit'>login</button>
+  //     </form>
+  //   </div>
+  // )
 
   const noteForm = () => (
-    <form onSubmit={addNote}>
-      <input value={newNote} onChange={handleNoteChange} />
-      <button type='submit'>save</button>
-    </form>
+    <Togglable buttonLabel='new note'>
+      <NoteForm
+        onSubmit={addNote}
+        value={newNote}
+        handleChange={handleNoteChange}
+      />
+    </Togglable>
   )
 
   //  === signoff ===
-  const signOff = () => {
-    window.localStorage.clear()
-    return setUser(null)
-    // return loginForm()
-  }
+  // const signOff = () => {
+  //   window.localStorage.clear()
+  //   return setUser(null)
+  // }
+  // === login button option on landing ===
+  const loginForm = () => (
+    <Togglable buttonLabel='log in'>
+      <LoginForm
+        username={username}
+        password={password}
+        handleSubmit={handleLogin}
+        handleUsernameChange={({ target }) => setUsername(target.value)}
+        handlePasswordChange={({ target }) => setPassword(target.value)}
+      />
+    </Togglable>
+  )
 
   return (
     <div className='main_container'>
@@ -170,17 +191,34 @@ const App = () => {
       <Notification message={errorMessage} textColor={errTextColour} />
       {/* == conditional form */}
       {user === null ? (
+        // <div>
+        //   <p>Login form</p>
         loginForm()
       ) : (
+        // </div>
         <div>
-          <p>{user.name} logged-in</p>{' '}
-          <button type='button' onClick={signOff}>
-            {' '}
-            Log Out
-          </button>
+          <p>{user.name} logged in</p>
           {noteForm()}
         </div>
       )}
+
+      {/* {user === null ? 
+        {loginForm()}
+       
+       : 
+        // <div>
+        //   <p>{user.name} logged-in</p>{' '}
+        //   <button type='button' onClick={signOff}>
+        //     {' '}
+        //     Log Out
+        //   </button>
+        //   {noteForm()}
+        // </div>
+        <div>
+          <p>{user.name} logged in</p>
+          {noteForm()}
+        </div>
+      } */}
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
