@@ -16,9 +16,10 @@ const LoginForm = ({
           <input
             type='text'
             value={username}
+            // defaultValue={username}
             name='Username'
             onChange={handleUserNameChange}
-            // placeholder='User Name'
+            placeholder='User Name'
           />
         </div>
         <div>

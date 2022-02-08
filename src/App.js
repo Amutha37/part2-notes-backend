@@ -11,11 +11,13 @@ import NoteForm from './components/NoteForm'
 const App = () => {
   // const [loginVisible, setLoginVisible] = useState(false)
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
+
   const [showAll, setShowAll] = useState(false)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('Kmart')
+  const [password, setPassword] = useState('Kmartpass')
+  // const [username, setUsername] = useState('')
+  // const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const [errorMessage, setErrorMessage] = useState(null)
@@ -36,40 +38,42 @@ const App = () => {
     }
   }, [])
 
-  const addNote = async (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() > 0.5,
-      id: notes.length + 1,
-    }
+  const addNote = (noteObject) => {
+    // const noteObject = {
+    //   content: newNote,
+    //   date: new Date().toISOString(),
+    //   important: Math.random() > 0.5,
+    //   id: notes.length + 1,
+    // }
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote))
+    })
     setErrTextColour(false)
-    try {
-      const saveNotes = await noteService.create(noteObject)
-      // .then((returnedNote) => {
-      // setNotes(notes.concat(noteObject))
-      setNotes([...notes, saveNotes])
-      setNewNote('')
-      setErrorMessage(`Note '${noteObject.content}' succesfully saved.`)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-      // })
-    } catch (error) {
-      console.log(error.response.data)
-      setErrTextColour(true)
-      setErrorMessage(error.response.data)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
+    //   try {
+    //     const saveNotes = await noteService.create(noteObject)
+    //     // .then((returnedNote) => {
+    //     // setNotes(notes.concat(noteObject))
+    //     setNotes([...notes, saveNotes])
+    //     // setNewNote('')
+    //     setErrorMessage(`Note '${noteObject.content}' succesfully saved.`)
+    //     setTimeout(() => {
+    //       setErrorMessage(null)
+    //     }, 5000)
+    //     // })
+    //   } catch (error) {
+    //     console.log(error.response.data)
+    //     setErrTextColour(true)
+    //     setErrorMessage(error.response.data)
+    //     setTimeout(() => {
+    //       setErrorMessage(null)
+    //     }, 5000)
+    //   }
   }
 
-  const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
-  }
+  // const handleNoteChange = (event) => {
+  //   console.log(event.target.value)
+  //   setNewNote(event.target.value)
+  // }
 
   // show list of important and all
   const notesToShow = showAll ? notes : notes.filter((note) => note.important)
@@ -159,11 +163,7 @@ const App = () => {
 
   const noteForm = () => (
     <Togglable buttonLabel='new note'>
-      <NoteForm
-        onSubmit={addNote}
-        value={newNote}
-        handleChange={handleNoteChange}
-      />
+      <NoteForm createNote={addNote} />
     </Togglable>
   )
 
